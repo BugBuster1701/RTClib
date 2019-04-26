@@ -1,5 +1,6 @@
 // Code by JeeLabs http://news.jeelabs.org/code/
 // Released to the public domain! Enjoy!
+// Anpassungen Glen Langer
 
 #include <Wire.h>
 #include "RTClib.h"
@@ -472,6 +473,40 @@ DateTime RTC_DS3231::now() {
   uint16_t y = bcd2bin(Wire._I2C_READ()) + 2000;
   
   return DateTime (y, m, d, hh, mm, ss);
+}
+
+float RTC_DS3231::getTemp() {
+  /*
+    Read measured temperature. Quick. (Temperature is auto-measured
+    once in 64 seconds.)
+    return reg[0x11] + (reg[0x12] >> 6) / 4
+  */
+  float result =
+    int8_t(read_i2c_register(DS3231_ADDRESS, DS3231_TEMP_INT)) +
+    (float(read_i2c_register(DS3231_ADDRESS, DS3231_TEMP_FRAC) >> 6) / 4);
+  return result;
+}
+
+float RTC_DS3231::measureTemp() {
+  /*
+    Measure temperature and return result. Takes some time (near .3s).
+    while flag.busy;
+    flag.conv = 1;
+    while flag.conv;
+    return get_temp()
+  */
+  do {
+  } while (read_i2c_register(DS3231_ADDRESS, DS3231_STATUSREG) & _BV(2));
+
+  uint8_t control_reg;
+  control_reg = read_i2c_register(DS3231_ADDRESS, DS3231_CONTROL);
+  control_reg |= _BV(5);
+  write_i2c_register(DS3231_ADDRESS, DS3231_CONTROL, control_reg);
+
+  do {
+  } while (read_i2c_register(DS3231_ADDRESS, DS3231_CONTROL) & _BV(5));
+
+  return getTemp();
 }
 
 Ds3231SqwPinMode RTC_DS3231::readSqwPinMode() {

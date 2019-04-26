@@ -1,5 +1,6 @@
 // Code by JeeLabs http://news.jeelabs.org/code/
 // Released to the public domain! Enjoy!
+// Anpassungen Glen Langer
 
 #ifndef _RTCLIB_H_
 #define _RTCLIB_H_
@@ -19,6 +20,8 @@ class TimeSpan;
 #define DS3231_ADDRESS  0x68
 #define DS3231_CONTROL  0x0E
 #define DS3231_STATUSREG 0x0F
+#define DS3231_TEMP_INT 0x11
+#define DS3231_TEMP_FRAC 0x12
 
 #define SECONDS_PER_DAY 86400L
 
@@ -101,6 +104,8 @@ public:
     static void adjust(const DateTime& dt);
     bool lostPower(void);
     static DateTime now();
+    static float getTemp();
+    static float measureTemp();
     static Ds3231SqwPinMode readSqwPinMode();
     static void writeSqwPinMode(Ds3231SqwPinMode mode);
 };
