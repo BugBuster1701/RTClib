@@ -539,3 +539,45 @@ void RTC_DS3231::writeSqwPinMode(Ds3231SqwPinMode mode) {
 
   //Serial.println( read_i2c_register(DS3231_ADDRESS, DS3231_CONTROL), HEX);
 }
+
+void RTC_DS3231::enable32kHz(bool TF) {
+    // turn 32kHz pin on or off
+    byte temp_buffer = readControlByte(1);
+    if (TF) {
+        // turn on 32kHz pin
+        temp_buffer = temp_buffer | 0b00001000;
+    } else {
+        // turn off 32kHz pin
+        temp_buffer = temp_buffer & 0b11110111;
+    }
+    writeControlByte(temp_buffer, 1);
+}
+
+byte RTC_DS3231::readControlByte(bool which) {
+    // Read selected control byte
+    // first byte (0) is 0x0e, second (1) is 0x0f
+    Wire.beginTransmission(DS3231_ADDRESS);
+    if (which) {
+        // second control byte
+       Wire._I2C_WRITE(0x0f);
+    } else {
+        // first control byte
+       Wire._I2C_WRITE(0x0e);
+    }
+    Wire.endTransmission();
+    Wire.requestFrom(DS3231_ADDRESS, 1);
+    return Wire._I2C_READ();  
+}
+
+void RTC_DS3231::writeControlByte(byte control, bool which) {
+    // Write the selected control byte.
+    // which=false -> 0x0e, true->0x0f.
+    Wire.beginTransmission(DS3231_ADDRESS);
+    if (which) {
+       Wire._I2C_WRITE(0x0f);
+    } else {
+       Wire._I2C_WRITE(0x0e);
+    }
+   Wire._I2C_WRITE(control);
+    Wire.endTransmission();
+}

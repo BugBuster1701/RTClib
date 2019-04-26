@@ -108,6 +108,16 @@ public:
     static float measureTemp();
     static Ds3231SqwPinMode readSqwPinMode();
     static void writeSqwPinMode(Ds3231SqwPinMode mode);
+
+    void enable32kHz(bool TF); 
+		// Turns the 32kHz output pin on (true); or off (false).
+
+private:
+    byte readControlByte(bool which); 
+		// Read selected control byte: (0); reads 0x0e, (1) reads 0x0f
+    void writeControlByte(byte control, bool which); 
+		// Write the selected control byte. 
+		// which == false -> 0x0e, true->0x0f.  
 };
 
 
