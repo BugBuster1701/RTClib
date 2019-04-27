@@ -29,6 +29,17 @@ void setup () {
     // January 21, 2014 at 3am you would call:
     // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
   }
+
+  //get temperature 
+  float c = rtc.getTemp();
+
+  //print temperature
+  Serial.print( F("(chip) temperature is ") );
+  Serial.print(c);
+  Serial.print( F("* Celcius and  "));
+  Serial.print( ( c * (9/5) ) + 32);
+  Serial.println( F("* Fahrenheit") );
+
 }
 
 void loop () {
